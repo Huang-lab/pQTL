@@ -64,6 +64,9 @@ for (cancer in pan.coh){
         mutation = mutation[!isna]
         des.mat = cbind(des.mat, mutation)
         
+        if (sum(mutation) < 3)
+          next
+        
         lm2 = lm((as.numeric(daf[match(gene, rownames(pro)), !isna]) ~ des.mat))
         
         lrt = anova(lm1, lm2, test = "LRT")
