@@ -187,11 +187,12 @@ for (mutation in mutations) {
 ################################################################################
 dat <- read_excel('../data/results/discordant.xlsx')
 dat <- dat[dat$overlap == TRUE,]
+len <- dim(dat[dat$overlap == TRUE,])[1]
 p <- ggplot(dat, aes(x="", fill=mutation)) +
   geom_bar(stat="count", width=1, alpha = .7) + 
   scale_fill_manual(values = color.palette) + 
   coord_polar("y", start=0) + 
-  geom_text(stat='count', aes(label=percent(..count../55)), size=4, position = position_stack(vjust = 0.4)) +
+  geom_text(stat='count', aes(label=percent(..count../len)), size=4, position = position_stack(vjust = 0.4)) +
   theme_void(base_size=12)
 print(p)
 ggsave(file=paste0('../doc/psQTLs_mut_count.png'), w=4, h=3)
