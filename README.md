@@ -8,7 +8,7 @@
 `Fisher_Exact.R`: Conduct fisher exact test to protein data to see if there is significant pQTL enrichment in truncation \
 `heatmap_data.ipynb`: Extract the data used to make heatmap \
 `HGVSp.R` Extract HGVSp short \
-`Lolliplot_Data`: Prepare the data needed to generate lolliplots \
+`Lolliplot_Data.R`: Prepare the data needed to generate lolliplots \
 `lrt.R`: Likelihood ratio test \
 `Pro_regression_retro_cptac.R`: Find pQTLs in retrospective data with multivariate linear regression \
 `pros_retro_overlap.ipynb`: Overlap retrospective data with prospective data \
