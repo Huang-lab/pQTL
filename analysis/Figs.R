@@ -11,7 +11,7 @@ library('ComplexHeatmap')
 color.palette =  setNames(c("#8DD3C7","#FB8072","#BEBADA"),
                           c('missense', 'truncating', 'synonymous'))
 color.palette1 =  setNames(c("#FAD2D9", "#9EDDF9"),
-                         c('mutated', 'nonmutated'))
+                           c('mutated', 'nonmutated'))
 
 pan.coh = c('BRCA', 'CRC', 'CCRCC', 'LUAD', 'OV', 'UCEC')
 mutations = c('missense', 'truncating', 'synonymous') 
@@ -156,25 +156,33 @@ for (mutation in mutations) {
       p <- p + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
       p <- p + scale_color_manual(values = color.palette1) + scale_fill_manual(values = color.palette1)
       
-      gg.text = exp[(exp$gene==gene) & (exp$isMut == 'mutated'),]
-      if (data.level == 'Pro') {
-        if (dir[(dir$Gene==gene) & (dir$mutation == mutation),]$PrologFC > 0) {
-          gg.text = head(gg.text[order(gg.text$expression, decreasing = T), ], 3)
+      
+      all.text = exp[(exp$gene==gene) & (exp$isMut == 'mutated'),]
+      cancers = unique(exp[exp$gene==gene,]$cancer)
+      gg.text = c()
+      
+      for (cancer in cancers){
+        text = all.text[all.text$cancer == cancer,]
+        if (data.level == 'Pro') {
+          if (dir[(dir$Gene==gene) & (dir$mutation == mutation) & (dir$cancer == cancer),]$PrologFC > 0) {
+            gg.text = rbind(gg.text, head(text[order(text$expression, decreasing = T), ], 3))
+          } else {
+            gg.text = rbind(gg.text, head(text[order(text$expression, decreasing = F), ], 3))
+          }
         } else {
-          gg.text = head(gg.text[order(gg.text$expression, decreasing = F), ], 3)
+          if (dir[(dir$Gene==gene) & (dir$mutation == mutation) & (dir$cancer == cancer),]$RNAlogFC > 0) {
+            gg.text = rbind(gg.text, head(text[order(text$expression, decreasing = T), ], 3))
+          } else {
+            gg.text = rbind(gg.text, head(text[order(text$expression, decreasing = F), ], 3))
+          }
         }
-      } else {
-        if (dir[(dir$Gene==gene) & (dir$mutation == mutation),]$RNAlogFC > 0) {
-          gg.text = head(gg.text[order(gg.text$expression, decreasing = T), ], 3)
-        } else {
-          gg.text = head(gg.text[order(gg.text$expression, decreasing = F), ], 3)
-        }
+        
       }
       
       p <- p + geom_label_repel(gg.text, mapping = aes(x=isMut, y=expression, label=hgvsp, col='white'),
-                                min.segment.length = 0, alpha = .9, max.overlaps=50, size=6, show.legend = FALSE)
+                                min.segment.length = 0, alpha = .9, max.overlaps=50, size=8, show.legend = FALSE)
       p <- p + xlab('mutation status')
-      p <- p + ggtitle(paste(cancer, gene, mutation))
+      p <- p + ggtitle(paste(gene, mutation))
       print(p)
       # ggsave(file=paste0('../doc/MutVsWild/concordant/', mutation, '/', data.level, '/', gene, 'ExpMutVsWild.png'))
       ggsave(file=paste0('../doc/MutVsWild/discordant/', mutation, '/', data.level, '/', gene, 'ExpMutVsWild.png'))
