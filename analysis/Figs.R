@@ -103,9 +103,13 @@ for (cancer in pan.coh) {
 ################################################################################
 dat <- read_excel('../data/results/concordant.xlsx')
 p <- ggplot(dat) 
+top = 3
+gg.text = head(unique(dat[order(dat$PrologFC, decreasing = T),]), top)
+gg.text = rbind(gg.text, head(unique(dat[order(dat$PrologFC, decreasing = F),]), top))
+
 p <- p + ggtitle('concordant QTLs') + theme_bw(base_size=12)
 p <- p + geom_point(dat, mapping = aes(RNAlogFC, PrologFC, col=mutation), alpha = .7)
-p <- p + geom_label_repel(data=dat, mapping = aes(RNAlogFC, PrologFC, label=Gene, col=mutation),
+p <- p + geom_label_repel(data=gg.text, mapping = aes(RNAlogFC, PrologFC, label=paste(cancer, Gene), col=mutation),
                           min.segment.length = 0, alpha = .9, max.overlaps=50, size=4, show.legend = FALSE)
 p <- p + scale_color_manual(values = color.palette)
 p <- p + xlab('RNAlogFC') + ylab('PrologFC')
@@ -116,14 +120,19 @@ ggsave(file='../doc/concordantQTLs.png', w=6, h=4.5)
 
 dat <- read_excel('../data/results/discordant.xlsx')
 dat <- dat[dat$overlap == TRUE,]
+top = 3
+gg.text = head(unique(dat[order(dat$PrologFC, decreasing = T),]), top)
+gg.text = rbind(gg.text, head(unique(dat[order(dat$PrologFC, decreasing = F),]), top))
 p <- ggplot(dat) 
 p <- p + ggtitle('discordant QTLs') + theme_bw(base_size=12)
 p <- p + geom_point(dat, mapping = aes(RNAlogFC, PrologFC, col=mutation), alpha = .7)
+p <- p + geom_label_repel(data=gg.text, mapping = aes(RNAlogFC, PrologFC, label=paste(cancer, Gene), col=mutation),
+                          min.segment.length = 0, alpha = .9, max.overlaps=50, size=4, show.legend = FALSE)
 p <- p + scale_color_manual(values = color.palette)
 p <- p + xlab('RNAlogFC') + ylab('PrologFC')
 p <- p + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 p <- p + geom_abline(intercept = 0, slope = 1, color='grey', size=0.8)
-ggsave(file='../doc/discordantQTLs.png', w=4, h=3)
+ggsave(file='../doc/discordantQTLs.png', w=6, h=4.5)
 
 ################################################################################
 # violin plots (Fig 3B and Fig 4B)
@@ -133,10 +142,10 @@ data.level = 'RNA'
 
 mutation = 'truncating'
 for (mutation in mutations) {
-  # exp <- read.csv(paste0('../data/wildVSmut/concordant/', data.level, '_exp_wildVsMut.csv'))
-  # dir <- read_excel('../data/results/concordant.xlsx')
-  exp <- read.csv(paste0('../data/wildVSmut/discordant/', data.level, '_exp_wildVsMut.csv'))
-  dir <- read_excel('../data/results/discordant.xlsx')
+  exp <- read.csv(paste0('../data/wildVSmut/concordant/', data.level, '_exp_wildVsMut.csv'))
+  dir <- read_excel('../data/results/concordant.xlsx')
+  # exp <- read.csv(paste0('../data/wildVSmut/discordant/', data.level, '_exp_wildVsMut.csv'))
+  # dir <- read_excel('../data/results/discordant.xlsx')
   
   exp <- exp[exp$mutation==mutation,]
   exp[exp$isMut == 'mutant', ]$isMut = 'mutated'
@@ -184,7 +193,7 @@ for (mutation in mutations) {
       p <- p + xlab('mutation status')
       p <- p + ggtitle(paste(gene, mutation))
       print(p)
-      # ggsave(file=paste0('../doc/MutVsWild/concordant/', mutation, '/', data.level, '/', gene, 'ExpMutVsWild.png'))
+      ggsave(file=paste0('../doc/MutVsWild/concordant/', mutation, '/', data.level, '/', gene, 'ExpMutVsWild.png'))
       ggsave(file=paste0('../doc/MutVsWild/discordant/', mutation, '/', data.level, '/', gene, 'ExpMutVsWild.png'))
     }
   }
