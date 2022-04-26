@@ -5,7 +5,6 @@
 # _|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
 rm(list = ls(all.names = TRUE))
 setwd('~/Library/CloudStorage/Box-Box/Huang_lab/Huang_lab_data/CPTAC/WXS/')
-source('../../../manuscripts/kinomeOutlier/analysis/functions_proteomics.R')
 
 workflow = 'SomaticVariant'
 likelyFunctionalTypes = c("Frame_Shift_Del","Frame_Shift_Ins","In_Frame_Del","In_Frame_Ins","Nonsense_Mutation","Splice_Site","Start_Codon_Del","Start_Codon_Del")
@@ -13,7 +12,6 @@ cancer.types = c('BRCA','CCRCC','CRC','LUAD','OV','UCEC')
 
 cancer = 'UCEC'
 for (cancer in cancer.types){
-  setwd('~/Library/CloudStorage/Box-Box/Huang_lab/Huang_lab_data/CPTAC/WXS/')
   # Load data
   map = read.table(paste(workflow, cancer, 'gdc_sample_sheet.tsv', sep = '/'), sep = '\t', header = T)
   map$Case.ID = as.factor(apply(as.matrix(map$Case.ID), 1, function(x){gsub('-','.',strsplit(as.character(x), split = ',')[[1]][1])}))
